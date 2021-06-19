@@ -48,14 +48,3 @@ class CNN(nn.Module):
     def summary(self):
         summary(self, (1, 300, 300))
 
-
-# model = CNN()
-# print(model)
-if __name__ == "__main__":
-    # Caution! If don't have cuda device, using CNN(). Not CNN().cuda().
-    # Also CustomMLP have to upper line.
-    graphic_device = 'gpu'
-    if graphic_device == 'cpu':
-        summary(CNN(), (3, 256, 256), device=graphic_device)
-    else:
-        summary(CNN().cuda(), (3, 256, 256), device='cuda')
