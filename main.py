@@ -117,6 +117,14 @@ def test(tst_loader, model, device):
         print(f'Val Loss:{tst_loss:.5f} | MSE:{tst_mse:.5f}')
     return tst_loss, tst_mse
 
-
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--num_epochs', type=int, default=60)
+    parser.add_argument('--device', type=str, default='gpu')
+    parser.add_argument('--optimizer', type=str, default='Adam')
+    parser.add_argument('--arch', type=str, default='Multi_Res50')
+    args = parser.parse_args()
+    print(args)
+    main(args)
 
 
