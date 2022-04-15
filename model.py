@@ -3,48 +3,61 @@ import torch.nn as nn  # for using nn.Module
 from torchsummary import summary  # for checking amount of model parameter
 import torch.nn.init as init
 
-class Flatten(nn.Module):
-    def forward(self, input):
-        return input.view(input.size(0), -1)
-
-
-class CNN(nn.Module):
+class Multi_Res50(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super().__init__()
+        self.resnet = resnet50(pretrained=True)
+        self.classifier = nn.Linear(1000, 30)
 
-        self.conv1 = nn.Conv2d(3, 16, 5, stride=1)
-        self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv2d(16, 16, 5, stride=1)
-        self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(61*61 * 16, 128)  # 61 or 53
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 30)
-        self.relu = nn.ReLU()
+    def forward(self, x):
+        x = self.resnet(x)
+        x = self.classifier(x)
 
+        return torch.sigmoid(x)
 
 
-        # self.flatten = Flatten()
-        # self.flatten = nn.Flatten()
-        self.drop_out = nn.Dropout(0.2)
+class DNN(nn.Module):
+    def __init__(self):
+        super(DNN, self).__init__()
 
-    def forward(self, img):
-        output = self.conv1(img)
+        self.layer1 = nn.Sequential(
+            torch.nn.Linear(256*256*3, 1024, bias=True),
+            torch.nn.BatchNorm1d(1024),
+            torch.nn.ReLU()
+        )
 
-        output = self.maxpool1(self.relu(output))
-        output = self.conv2(output)
-        output = self.maxpool2(self.relu(output))
-        output = output.view(output.size(0), -1)
-        output = self.drop_out(output)
-        output = self.fc1(output)
-        output = self.relu(output)
-        output = self.drop_out(output)
-        output = self.fc2(output)
-        output = self.relu(output)
-        output = self.drop_out(output)
-        output = self.fc3(output)
+        self.layer2 = nn.Sequential(
+            torch.nn.Linear(1024, 512, bias=True),
+            torch.nn.BatchNorm1d(512),
+            torch.nn.ReLU()
+        )
+        self.layer3 = nn.Sequential(
+            torch.nn.Linear(512, 256, bias=True),
+            torch.nn.BatchNorm1d(256),
+            torch.nn.ReLU()
+        )
+        self.layer4 = nn.Sequential(
+            torch.nn.Linear(256, 128, bias=True),
+            torch.nn.BatchNorm1d(128),
+            torch.nn.ReLU()
+        )
+        self.layer5 = nn.Sequential(
+            torch.nn.Linear(128, 64, bias=True),
+            torch.nn.BatchNorm1d(64),
+            torch.nn.ReLU()
+        )
 
-        return torch.sigmoid(output)
+        self.layer6 = nn.Sequential(
+            torch.nn.Linear(64, 30, bias=True)
+        )
 
-    def summary(self):
-        summary(self, (1, 300, 300))
+    def forward(self, x):
+        x = x.view(x.size(0), -1)  # flatten
+        x_out = self.layer1(x)
+        x_out = self.layer2(x_out)
+        x_out = self.layer3(x_out)
+        x_out = self.layer4(x_out)
+        x_out = self.layer5(x_out)
+        x_out = self.layer6(x_out)
+        return torch.sigmoid(x_out)
 
