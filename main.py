@@ -3,7 +3,7 @@ import gc
 import os
 import time
 import warnings
-from model import CNN  # for using CNN model
+from model import * 
 import numpy as np
 import pandas as pd  # for make some dataframe of train,test loss. it will be printed at last
 import torch.nn as nn  # for define loss function
@@ -23,17 +23,6 @@ gc.collect()
 warnings.filterwarnings('ignore')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class Multi_Res50(nn.Module):
-    def __init__(self) -> None:
-        super().__init__()
-        self.resnet = resnet50(pretrained=True)
-        self.classifier = nn.Linear(1000, 30)
-
-    def forward(self, x):
-        x = self.resnet(x)
-        x = self.classifier(x)
-
-        return x
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
