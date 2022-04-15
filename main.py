@@ -106,6 +106,100 @@ def test(tst_loader, model, device):
         print(f'Val Loss:{tst_loss:.5f} | MSE:{tst_mse:.5f}')
     return tst_loss, tst_mse
 
+
+
+
+def main(args):
+    start = time.time()
+    model_path = '../results/'
+    experiment_num = 'Resnet_imb'
+    dir = "../ad_data"
+    save_path = os.path.join(model_path, experiment_num)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    else:
+        if len(os.listdir(save_path)) > 1:
+            print('Create New Folder')
+            raise ValueError
+        else:
+            pass
+
+    os.environ["CUDA_VISIBLE_DEVICE"] = '1'
+
+
+    transform = transforms.Compose([
+        transforms.Resize((256,256)),
+        transforms.RandomCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.1, contrast=0.2, saturation=0, hue=0),
+        transforms.ToTensor()
+    ])
+
+    dataset = ad_dataset(data_dir=dir, transform=transform)
+
+    test_split = .2
+    shuffle_dataset = True
+    random_seed = 42
+
+    # Creating data indices for training and validation splits:
+    dataset_size = len(dataset)
+    indices = list(range(dataset_size))
+    split = int(np.floor(test_split * dataset_size))
+    if shuffle_dataset:
+        np.random.seed(random_seed)
+        np.random.shuffle(indices)
+        train_indices, test_indices = indices[split:], indices[:split]
+
+    train_sampler = SubsetRandomSampler(train_indices)
+    test_sampler = SubsetRandomSampler(test_indices)
+
+
+    train_loader = DataLoader(dataset, batch_size=16, sampler=train_sampler, num_workers=0)
+    test_loader = DataLoader(dataset, batch_size=16, sampler=test_sampler, num_workers=0)
+    
+    # define device
+    if args.device == 'gpu':
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+
+    # define model
+    if args.arch == 'Multi_Res50':
+        model = Multi_Res50()
+    elif args.arch == 'DNN':
+        model = DNN()
+    
+    # define optimizer
+    if args.optimizer == 'Adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=0.5, patience=5)
+
+    # Training, Validate
+    best_loss = np.inf
+    for epoch in range(1, args.num_epochs + 1):
+        print('{}Epoch'.format(epoch))
+        train_loss, train_mse, train_acc = train(train_loader, model, device=device, optimizer=optimizer,criterion=criterion)
+        val_loss, val_mse, val_acc = test(test_loader, model,criterion=criterion, device=device)
+        scheduler.step(val_loss)
+        # Save Models
+        if val_loss < best_loss:
+            best_loss = val_loss
+            best_epoch = epoch
+            torch.save(model, os.path.join(save_path, 'best_model.pth'))  # 전체 모델 저장
+            torch.save(model.state_dict(), os.path.join(save_path, 'best_model_state_dict.pth'))  # 모델 객체의 state_dict 저장
+
+        if epoch == 60:
+            torch.save(model, os.path.join(save_path, f'{epoch}epoch.pth'))
+            torch.save(model.state_dict(), os.path.join(save_path, f'{epoch}epoch_state_dict.pth'))
+        write_logs(epoch, train_mse, val_mse, train_acc, val_acc, save_path)
+    end = time.time()
+    print(f'Total Process time:{(end - start) / 60:.3f}Minute')
+    print(f'Best Epoch:{best_epoch} | MSE:{best_loss:.5f}')
+
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_epochs', type=int, default=60)
