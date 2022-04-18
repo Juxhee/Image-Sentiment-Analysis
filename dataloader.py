@@ -6,6 +6,8 @@ import torch
 import logging
 from PIL import Image # for open image file
 
+# https://gist.github.com/kyamagu/0aa8c06501bd8a5816640639d4d33a17
+
 
 logger = logging.getLogger()
 class ad_dataset(object):
