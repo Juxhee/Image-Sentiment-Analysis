@@ -11,8 +11,8 @@ The dataset consist of a total of 30,430 advertisement images and 30 multiple se
 
 `dataloader.py`
 
-
 </br>
+
 #### model : DNN, ResNet50
 
 `model.py`
