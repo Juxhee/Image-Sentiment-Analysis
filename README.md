@@ -18,12 +18,14 @@ The dataset consist of a total of 30,430 advertisement images and 30 multiple se
 `model.py`
 </br>
 </br>
+
 ### How to use
 
 ```python
 python main.py --num_epochs(int) --device(str) --optimizer(str) --arch(str)
 ```
 
+</br>
 
 </br>
 </br>
