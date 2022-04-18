@@ -6,10 +6,12 @@
 ![image](https://user-images.githubusercontent.com/60679596/163516312-6125c8ed-1e4c-4e08-b006-625d0676c35b.png)
 
 </br>
+
 - data loader : https://gist.github.com/kyamagu/0aa8c06501bd8a5816640639d4d33a17
 `dataloader.py`
 
 </br>
+
 - model : DNN, ResNet50
 `model.py`
 </br>
