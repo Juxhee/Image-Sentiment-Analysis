@@ -8,11 +8,11 @@
 </br>
 
 - data loader : https://gist.github.com/kyamagu/0aa8c06501bd8a5816640639d4d33a17
+
 `dataloader.py`
 
-</br>
-
 - model : DNN, ResNet50
+
 `model.py`
 </br>
 
