@@ -1,6 +1,6 @@
 ## Image-Sentiment Classification Using advertisement-sentiment dataset
 
-#### dataset
+### dataset
 http://people.cs.pitt.edu/~kovashka/ads/ (Automatic Understanding Of Image And Video Advertisements)
 The dataset consist of a total of 30,430 advertisement images and 30 multiple sentiment labels.
 
@@ -8,14 +8,14 @@ The dataset consist of a total of 30,430 advertisement images and 30 multiple se
 
 </br>
 
-#### data loader 
+### data loader 
 https://gist.github.com/kyamagu/0aa8c06501bd8a5816640639d4d33a17
 
 `dataloader.py`
 
 </br>
 
-#### model 
+### model 
 DNN, ResNet50
 
 `model.py`
