@@ -19,35 +19,17 @@ class Multi_Res50(nn.Module):
 class DNN(nn.Module):
     def __init__(self):
         super(DNN, self).__init__()
-
         self.layer1 = nn.Sequential(
-            torch.nn.Linear(256*256*3, 1024, bias=True),
-            torch.nn.BatchNorm1d(1024),
-            torch.nn.ReLU()
-        )
-
-        self.layer2 = nn.Sequential(
-            torch.nn.Linear(1024, 512, bias=True),
-            torch.nn.BatchNorm1d(512),
-            torch.nn.ReLU()
-        )
-        self.layer3 = nn.Sequential(
-            torch.nn.Linear(512, 256, bias=True),
+            torch.nn.Linear(256*256*3, 256, bias=True),
             torch.nn.BatchNorm1d(256),
             torch.nn.ReLU()
         )
-        self.layer4 = nn.Sequential(
-            torch.nn.Linear(256, 128, bias=True),
-            torch.nn.BatchNorm1d(128),
-            torch.nn.ReLU()
-        )
-        self.layer5 = nn.Sequential(
-            torch.nn.Linear(128, 64, bias=True),
+        self.layer2 = nn.Sequential(
+            torch.nn.Linear(256, 64, bias=True),
             torch.nn.BatchNorm1d(64),
             torch.nn.ReLU()
         )
-
-        self.layer6 = nn.Sequential(
+        self.layer3 = nn.Sequential(
             torch.nn.Linear(64, 30, bias=True)
         )
 
@@ -56,8 +38,5 @@ class DNN(nn.Module):
         x_out = self.layer1(x)
         x_out = self.layer2(x_out)
         x_out = self.layer3(x_out)
-        x_out = self.layer4(x_out)
-        x_out = self.layer5(x_out)
-        x_out = self.layer6(x_out)
-        return torch.sigmoid(x_out)
+        return x_out
 
